@@ -1,0 +1,40 @@
+extern float rsqrt(float);
+extern float q_rsqrt(float);
+#include <stdlib.h>
+#include <stdio.h>
+
+int main(int ac, char **av)
+{
+    float x = 1.f;
+
+    int *_i = (int*)&x;
+
+#define i (*_i)
+
+    volatile float slow;
+    volatile float fast;
+
+    int j = 0;
+#if 0
+    for (j = 0; j < 0xffffff; j++) {
+        i++;
+        slow = rsqrt(x);
+        fast = q_rsqrt(x);
+#if 0
+        printf("(1/)vsqrtss: %f %f\n"
+               "vrsqrtss: %f %f\n",
+               slow, (1/slow)*(1/slow),
+               fast, (1/fast)*(1/fast));
+#endif
+    }
+#else
+    x = atoi(av[1]);
+        slow = rsqrt(x);
+        fast = q_rsqrt(x);
+
+        printf("(1/)vsqrtss: %f %f\n"
+               "vrsqrtss: %f %f\n",
+               slow, (1/slow)*(1/slow),
+               fast, (1/fast)*(1/fast));
+#endif
+}

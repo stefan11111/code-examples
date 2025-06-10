@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+typedef union conv {
+    float f;
+    int i;
+} conv_t;
+
+float qsqrtf(const float x)
+{
+    const int ix = ((conv_t){.f = x}).i;
+    conv_t lo;
+    conv_t hi;
+
+    if (x > 1) {
+        lo.f = 1;
+        hi.f = x;
+    } else {
+        lo.f = x;
+        hi.f = 1;
+    }
+
+    conv_t mid;
+
+    while (lo.i < hi.i) {
+//        mid = (lf + hf) * 0.5f;
+        mid.i = (unsigned)(lo.i + hi.i) >> 1;
+
+#if 1
+        double y = (double)mid.f * mid.f;
+#else
+        conv_t y;
+        y.f = mid.f * mid.f;
+        int iy = y.i;
+#endif
+
+        if (y < x) {
+            lo.i = mid.i + 1;
+        }
+        else {
+            hi.i = mid.i - 1;
+        }
+    }
+
+//    printf("here\n");
+
+    return lo.f;
+}
