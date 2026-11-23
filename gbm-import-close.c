@@ -57,6 +57,7 @@ int main(int ac, char **av)
     gbm_bo_destroy(bo);
 
     /* The actual test */
+    drmPrimeFDToHandle(fd, prime_fd, &handle);
     close(prime_fd);
     prime_fd = -1;
     if (drmPrimeHandleToFD(fd, handle, DRM_RDWR, &prime_fd)) {
