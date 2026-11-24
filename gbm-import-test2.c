@@ -66,11 +66,13 @@ again:
     size = 0;
     dma_buf = -1;
 
+    /* Create a gem buffer */
     if (drmModeCreateDumbBuffer(fd, w, h, bpp, 0 /* flags */,
                                 &handle, &stride, &size)) {
         goto err;
     }
 
+    /* Export it as dma bufs */
     if (drmPrimeHandleToFD(fd, handle, DRM_RDWR, &dma_buf)) {
         dma_buf = -1;
         drmCloseBufferHandle(fd, handle);
@@ -78,6 +80,7 @@ again:
         goto err;
     }
 
+    /* Import it into gbm */
     struct gbm_import_fd_modifier_data data = {
         .width = w,
         .height = h,
@@ -96,11 +99,13 @@ again:
         goto err;
     }
 
+    /* Drop our references to the gem buffer */
     close(dma_buf);
     dma_buf = -1;
     drmCloseBufferHandle(fd, handle);
     handle = 0;
 
+    /* Try to use the imported buffer */
     handle = gbm_bo_get_handle(bo).u32;
     if (drmPrimeHandleToFD(fd, handle, DRM_RDWR, &dma_buf)) dma_buf = -1;
 
